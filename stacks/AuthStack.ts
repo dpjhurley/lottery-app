@@ -1,7 +1,6 @@
 import { ApiStack } from './ApiStack';
 import { Cognito, StackContext, use } from 'sst/constructs';
 
-
 export const AuthStack = ({ stack, app }: StackContext) => {
     const { api } = use(ApiStack);
 
@@ -23,8 +22,18 @@ export const AuthStack = ({ stack, app }: StackContext) => {
         IdentityPoolId: auth.cognitoIdentityPoolId,
     });
 
-    // Return the auth resource
+    api.addRoutes(stack, {
+        'POST /auth/confirm': {
+            function: {
+                handler: 'packages/functions/src/auth/confirm.handler',
+                environment: {
+                    USER_POOL_CLIENT_ID: auth.userPoolClientId,
+                },
+            },
+        },
+    });
+
     return {
         auth,
     };
-}
+};

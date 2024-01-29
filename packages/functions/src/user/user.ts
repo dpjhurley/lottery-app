@@ -1,43 +1,17 @@
-import { CognitoIdentityServiceProvider } from 'aws-sdk';
-import { SignUpRequest } from 'aws-sdk/clients/cognitoidentityserviceprovider';
+import { CreateUserInput } from '@lottery-app/core/validateInput';
+import * as cognito from '@lottery-app/core/cognito';
 import { ApiHandler } from 'sst/node/api';
 
-const cognito = new CognitoIdentityServiceProvider();
-
-interface CreateUserEvent {
-    email: string;
-    password: string;
-    givenName: string;
-    familyName: string;
-}
-
-export const createUser = async (event: CreateUserEvent) => {
-    console.log('HERE');
+export const createUser = async (event: CreateUserInput) => {
     const { email, password, givenName, familyName } = event;
 
-    // Validate input
-    if (!email || !password || !givenName || !familyName) {
-        throw new Error('Missing required fields');
-    }
-
-    const params: SignUpRequest = {
-        ClientId: process.env.USER_POOL_CLIENT_ID || '',
-        Username: email,
-        Password: password,
-        UserAttributes: [
-            {
-                Name: 'given_name',
-                Value: givenName,
-            },
-            {
-                Name: 'family_name',
-                Value: familyName,
-            },
-        ],
-    };
-
     try {
-        const data = await cognito.signUp(params).promise();
+        const data = await cognito.createUser({
+            email,
+            password,
+            givenName,
+            familyName,
+        });
         console.log('User signed up successfully: ', data);
 
         return {

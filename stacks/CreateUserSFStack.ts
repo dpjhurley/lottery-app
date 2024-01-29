@@ -18,7 +18,7 @@ export const CreateUserSFStack = ({ stack }: StackContext) => {
     // Define each state
     const createUserTask = new LambdaInvoke(stack, 'createUserTask', {
         lambdaFunction: new Function(stack, 'CreateUser-func', {
-            handler: 'packages/functions/src/user.createUser',
+            handler: 'packages/functions/src/user/user.createUser',
             environment: {
                 USER_POOL_CLIENT_ID: auth.userPoolClientId,
             },
@@ -66,10 +66,12 @@ export const CreateUserSFStack = ({ stack }: StackContext) => {
     api.addRoutes(stack, {
         'POST /auth/signup': {
             function: {
-                handler: 'packages/functions/src/stateMachineTrigger/executeCreateUser.handler',
+                handler: 'packages/functions/src/auth/signUp.handler',
                 environment: {
                     STATE_MACHINE: stateMachine.stateMachineArn,
+                    USER_POOL_ID: auth.userPoolId,
                 },
+                permissions: ['cognito-idp:AdminGetUser'],
             },
         },
     });

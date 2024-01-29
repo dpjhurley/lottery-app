@@ -23,10 +23,6 @@ export const ApiStack = ({ stack }: StackContext) => {
                 authorizer: 'iam',
                 function: 'packages/functions/src/admin/user.getUser',
             },
-            'PATCH /admin/user/{id}': {
-                authorizer: 'iam',
-                function: 'packages/functions/src/admin/user.updateUser',
-            },
             'DELETE /admin/user/{id}': {
                 authorizer: 'iam',
                 function: 'packages/functions/src/admin/user.deleteUser',

@@ -13,7 +13,7 @@ export const EventStack = ({ stack }: StackContext) => {
                     },
                     targets: {
                         userMail:
-                            'packages/functions/src/notification/mail.sendEmail',
+                            'packages/functions/src/notification/mail.sendWelcomeEmail',
                     },
                 },
             },

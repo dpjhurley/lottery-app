@@ -7,11 +7,12 @@
     "typecheck": "tsc -noEmit"
   },
   "devDependencies": {
-    "vitest": "^1.2.1",
     "@types/node": "^20.11.5",
-    "sst": "^2.39.7"
+    "sst": "^2.39.7",
+    "vitest": "^1.2.1"
   },
   "dependencies": {
+    "@aws-sdk/client-cognito-identity-provider": "^3.501.0",
     "zod": "^3.22.4"
   }
 }
