@@ -2,8 +2,8 @@ import { ApiStack } from './ApiStack';
 import { Cognito, StackContext, use } from 'sst/constructs';
 
 
-export function AuthStack({ stack, app }: StackContext) {
-    const { api, adminApi } = use(ApiStack);
+export const AuthStack = ({ stack, app }: StackContext) => {
+    const { api } = use(ApiStack);
 
     // Create a Cognito User Pool and Identity Pool
     const auth = new Cognito(stack, 'LotteryUsers', {
@@ -13,7 +13,6 @@ export function AuthStack({ stack, app }: StackContext) {
     auth.attachPermissionsForAuthUsers(stack, [
         // Allow access to the API
         api,
-        adminApi,
     ]);
 
     // Show the auth resources in the output

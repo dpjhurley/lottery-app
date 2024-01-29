@@ -1,7 +1,7 @@
 import { StackContext, Table } from 'sst/constructs';
 
-export function StorageStack({ stack }: StackContext) {
-    const userTable = new Table(stack, 'Users', {
+export const StorageStack = ({ stack }: StackContext) => {
+    const userTable = new Table(stack, 'LotteryWinners', {
         fields: {
             email: 'string'
         },
