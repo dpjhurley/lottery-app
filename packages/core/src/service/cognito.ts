@@ -1,16 +1,15 @@
-import { CreateUserInput } from './validateInput';
+import { ConfirmUserInput, CreateUserInput } from '../types/types';
 import {
     CognitoIdentityProviderClient,
     SignUpCommand,
     AdminGetUserCommand,
     CognitoIdentityProviderClientConfig,
     ConfirmSignUpCommand,
+    ListUsersCommand,
+    UserStatusType,
 } from '@aws-sdk/client-cognito-identity-provider';
 
-interface ConfirmUserInput {
-    username: string;
-    ConfirmationCode: string;
-}
+
 
 // config could be region, credentials, etc
 const createCognitoClient = (config: CognitoIdentityProviderClientConfig) => {
@@ -68,7 +67,10 @@ export const isUniqueEmail = async (email: string) => {
     }
 };
 
-export const confirmUser = async ({ username, confirmationCode }: ConfirmUserInput) => {
+export const confirmUser = async ({
+    username,
+    confirmationCode,
+}: ConfirmUserInput) => {
     if (!process.env.USER_POOL_CLIENT_ID) {
         throw new Error('No user pool found');
     }
@@ -84,6 +86,28 @@ export const confirmUser = async ({ username, confirmationCode }: ConfirmUserInp
         await cognitoClient.send(command);
     } catch (error) {
         console.error(`Error confirming user with username: ${username}`);
+        throw error;
+    }
+};
+
+export const listConfirmedUsers = async () => {
+    if (!process.env.USER_POOL_ID) {
+        throw new Error('No user pool found');
+    }
+    const cognitoClient = createCognitoClient({});
+
+    const command = new ListUsersCommand({
+        UserPoolId: process.env.USER_POOL_ID,
+    });
+
+    try {
+        const response = await cognitoClient.send(command);
+        const confirmedUsers = response.Users?.filter(
+            (user) => user.UserStatus === UserStatusType.CONFIRMED
+        ) || [];
+        return confirmedUsers;
+    } catch (error) {
+        console.error('Error getting all users');
         throw error;
     }
 };

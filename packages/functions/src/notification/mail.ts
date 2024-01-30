@@ -1,77 +1,35 @@
-// import { ApiHandler } from 'sst/node/api';
-import { SESClient, SendEmailCommand } from '@aws-sdk/client-ses';
+import { EmailEvent } from '@lottery-app/core/types/types';
+import { ses } from '@lottery-app/core/service';
 import { APIGatewayProxyEventV2 } from 'aws-lambda';
 
-const ses = new SESClient();
-
-interface EmailInput {
-    email: string;
-    text: string;
-}
-
-interface EmailEvent {
-    detail: EmailInput;
-}
-
-export const sendWelcomeEmail = async (
+export const sendWinnerEmail = async (
     event: APIGatewayProxyEventV2 & EmailEvent
 ) => {
-    const { email, text } = event.detail;
-
-    const command = new SendEmailCommand({
-        Destination: {
-            ToAddresses: [email],
-        },
-        Message: {
-            Body: {
-                Text: {
-                    Charset: 'UTF-8',
-                    Data: text,
-                },
-            },
-            Subject: {
-                Charset: 'UTF-8',
-                Data: 'Welcome Email',
-            },
-        },
-        Source: 'no-reply@verificationemail.com',
-    });
+    const { email } = event.detail;
 
     try {
-        const data = await ses.send(command);
+        const data = await ses.sendWinnerEmail(email);
         console.log('Email sent! Message Id:', data.MessageId);
 
-        return {
-            statusCode: 200,
-            body: JSON.stringify({ message: 'Mail sent successfully' }),
-        };
+        return data;
     } catch (error) {
         console.error('Error sending email:', error);
+        throw error;
     }
 };
 
-// export const sendSms = ApiHandler(async (_evt) => {
-//     // Your sendSms logic here
-//     return {
-//         statusCode: 200,
-//         body: JSON.stringify({ message: 'Sms sent successfully' }),
-//     };
-// });
+export const sendAdminWinnerEmail = async (
+    event: APIGatewayProxyEventV2 & EmailEvent
+) => {
+    const { email, username } = event.detail;
 
-// export const sendWinnerEmail = ApiHandler(async (_evt) => {
-//     // Your sendWinnerEmail logic here, for now okay but maybe should use AWS SNS
-//     console.log('HERE sendWinnerEmail');
-//     return {
-//         statusCode: 200,
-//         body: JSON.stringify({ message: 'Mail sent successfully' }),
-//     };
-// });
+    try {
+        const data = await ses.sendAdminWinnerEmail(email, username);
+        console.log('Email sent! Message Id:', data.MessageId);
 
-// export const sendTotalEmail = ApiHandler(async (_evt) => {
-//     // Your sendTotalEmail logic here, for now okay but maybe should use AWS SNS
-//     console.log('HERE sendTotalEmail');
-//     return {
-//         statusCode: 200,
-//         body: JSON.stringify({ message: 'Mail sent successfully' }),
-//     };
-// });
+        return data;
+    } catch (error) {
+        console.error('Error sending email:', error);
+        throw error;
+    }
+};

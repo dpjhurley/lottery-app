@@ -1,29 +1,7 @@
-import { CreateUserInput } from '@lottery-app/core/validateInput';
-import * as cognito from '@lottery-app/core/cognito';
+// import { CreateUserInput } from '@lottery-app/core/validateInput';
+// import { cognito } from '@lottery-app/core/service';
 import { ApiHandler } from 'sst/node/api';
 
-export const createUser = async (event: CreateUserInput) => {
-    const { email, password, givenName, familyName } = event;
-
-    try {
-        const data = await cognito.createUser({
-            email,
-            password,
-            givenName,
-            familyName,
-        });
-        console.log('User signed up successfully: ', data);
-
-        return {
-            Payload: {
-                email,
-            },
-        };
-    } catch (error) {
-        console.error('Error signing up user: ', error);
-        throw error;
-    }
-};
 
 export const getUser = ApiHandler(async (_evt) => {
     // Your getUser logic here

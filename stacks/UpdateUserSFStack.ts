@@ -31,6 +31,7 @@ export const UpdateUserSFStack = ({ stack }: StackContext) => {
 
     api.addRoutes(stack, {
         'PATCH /admin/users/:id': {
+            // authorizer: 'iam',
             function: {
                 handler: 'packages/functions/src/admin/user.handler',
                 environment: {

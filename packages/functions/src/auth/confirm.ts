@@ -1,30 +1,34 @@
 import { APIGatewayProxyEventV2 } from 'aws-lambda';
-import * as cognito from '@lottery-app/core/cognito';
+import { cognito } from '@lottery-app/core/service';
+import middy from '@middy/core';
+import { validationMiddleware } from '@lottery-app/core/middleware';
+import { CodeMismatchException } from '@aws-sdk/client-cognito-identity-provider';
 
-export const handler = async (event: APIGatewayProxyEventV2) => {
-    if (!event.body || event.body === '') {
-        return {
-            statusCode: 400,
-            body: JSON.stringify({ error: 'Missing request body' }),
-        };
-    }
+type ParsedAPIGatewayProxyEventV2 = Omit<APIGatewayProxyEventV2, 'body'> & {
+    body: {
+        username: string;
+        confirmationCode: string;
+    };
+};
 
-    const parsedRequestBody = JSON.parse(event.body);
-    if (!parsedRequestBody.username || !parsedRequestBody.confirmationCode) {
-        return {
-            statusCode: 400,
-            body: JSON.stringify({ error: 'Missing required fields' }),
-        };
-    }
+const confirmHandler = async (event: ParsedAPIGatewayProxyEventV2) => {
+    const { body } = event;
 
     try {
-        await cognito.confirmUser(parsedRequestBody);
+        await cognito.confirmUser(body);
         return {
             statusCode: 200,
             body: JSON.stringify({ message: 'Confirmation successful' }),
         };
     } catch (error) {
         console.error('Error confirming user: ', error);
+        if (error instanceof CodeMismatchException) {
+            return {
+                statusCode: 404,
+                body: JSON.stringify({ error: error.message }),
+            };
+        }
+
         return {
             statusCode: 500,
             body: JSON.stringify({
@@ -33,3 +37,7 @@ export const handler = async (event: APIGatewayProxyEventV2) => {
         };
     }
 };
+
+export const handler = middy(confirmHandler)
+    .use(validationMiddleware.validateNonEmptyUnparsedBodyMiddleware())
+    .use(validationMiddleware.validateAuthConfirmMiddleware());

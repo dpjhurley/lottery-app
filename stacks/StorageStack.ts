@@ -1,14 +1,18 @@
 import { StackContext, Table } from 'sst/constructs';
 
 export const StorageStack = ({ stack }: StackContext) => {
-    const userTable = new Table(stack, 'LotteryWinners', {
+    const lotteryWinnersTable = new Table(stack, 'LotteryWinners', {
         fields: {
-            email: 'string'
+            username: 'string',
+            SK: 'string',
         },
-        primaryIndex: { partitionKey: 'email' },
+        primaryIndex: {
+            partitionKey: 'username',
+            sortKey: 'SK' 
+        },
     });
 
     return {
-        userTable,
+        lotteryWinnersTable,
     };
 }

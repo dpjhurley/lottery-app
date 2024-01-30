@@ -2,16 +2,18 @@ import { Api, StackContext, use } from 'sst/constructs';
 import { StorageStack } from './StorageStack';
 
 export const ApiStack = ({ stack }: StackContext) => {
-    const { userTable } = use(StorageStack);
+    const { lotteryWinnersTable } = use(StorageStack);
 
     const api = new Api(stack, 'Api', {
         routes: {
             // Public routes
-            'GET /public/lottery/winner': {
-                authorizer: 'iam',
+            'POST /public/lottery/winner': {
                 function: {
-                    handler: 'packages/functions/src/public/lottery.isWinner',
-                    bind: [userTable],
+                    handler: 'packages/functions/src/public/lotteryWins.handler',
+                    environment: {
+                        LOTTERY_WINNERS_TABLE: lotteryWinnersTable.tableName,
+                    },
+                    permissions: ['dynamodb:Query'],
                 },
             },
             // Admin routes
@@ -27,13 +29,6 @@ export const ApiStack = ({ stack }: StackContext) => {
                 authorizer: 'iam',
                 function: 'packages/functions/src/admin/user.deleteUser',
             },
-            'POST /admin/lottery': {
-                authorizer: 'iam',
-                function: {
-                    handler: 'packages/functions/src/admin.lottery',
-                    bind: [userTable],
-                },
-            },
         },
     });
 
@@ -46,4 +41,4 @@ export const ApiStack = ({ stack }: StackContext) => {
     return {
         api,
     };
-}
+};

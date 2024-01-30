@@ -1,35 +1,14 @@
 import { EventBus, StackContext } from 'sst/constructs';
 
 export const EventStack = ({ stack }: StackContext) => {
-    const userNotificationEventBus = new EventBus(
+    const notificationEventBus = new EventBus(
         stack,
-        'UserNotificationBus',
-        {
-            rules: {
-                sendConfirmation: {
-                    pattern: {
-                        source: ['user.notifications'],
-                        detailType: ['userCreated'],
-                    },
-                    targets: {
-                        userMail:
-                            'packages/functions/src/notification/mail.sendWelcomeEmail',
-                    },
-                },
-            },
-        }
-    );
-
-    userNotificationEventBus.attachPermissions(["ses:SendEmail"]);
-
-    const adminNotificationEventBus = new EventBus(
-        stack,
-        'AdminNotificationBus',
+        'notificationBus',
         {
             rules: {
                 sendWinner: {
                     pattern: {
-                        source: ['admin.notifications'],
+                        source: ['user.notifications'],
                         detailType: ['winnerSelected'],
                     },
                     targets: {
@@ -37,22 +16,23 @@ export const EventStack = ({ stack }: StackContext) => {
                             'packages/functions/src/notification/mail.sendWinnerEmail',
                     },
                 },
-                currentTotalWinner: {
+                sendAdminWinner: {
                     pattern: {
                         source: ['admin.notifications'],
-                        detailType: ['winnerTotal'],
+                        detailType: ['winnerSelected'],
                     },
                     targets: {
-                        userMail:
-                            'packages/functions/src/notification/mail.sendTotalEmail',
+                        adminMail:
+                            'packages/functions/src/notification/mail.sendAdminWinnerEmail',
                     },
                 },
             },
         }
     );
 
+    notificationEventBus.attachPermissions(['ses:SendEmail']);
+
     return {
-        userNotificationEventBus,
-        adminNotificationEventBus,
+        notificationEventBus,
     };
 };
