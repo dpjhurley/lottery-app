@@ -35,7 +35,11 @@ export const AuthStack = ({ stack, app }: StackContext) => {
                     requireSymbols: true,
                 },
             },
-            userPoolClient: {},
+            userPoolClient: {
+                authFlows: {
+                    userPassword: true,
+                },
+            },
         },
     });
 

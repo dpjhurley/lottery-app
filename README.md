@@ -34,6 +34,27 @@ The old sst console worked a lot better for me than the new.
 Below is a rough architecture diagram of what the application should look like. This has not all been completed at this time
 ![architecture diagram](event-driven-lottery.io.drawio.png)
 
+## Authentication for admin
+
+For this you will have to create a user, and confirm through the apis created. Then run this command to get an id token which is used to decode the admin status of a user. 
+
+I've added a jq pipe to this to make it easier, If you don't have it installed you can use brew
+
+```bash
+brew install jq
+```
+
+```bash
+aws cognito-idp initiate-auth \
+    --region us-east-1 \
+    --auth-flow USER_PASSWORD_AUTH \
+    --client-id CLIENT_POOL_ID \
+    --auth-parameters USERNAME=you@email.com,PASSWORD=your_password | jq -r '.AuthenticationResult.IdToken'
+```
+
+- **CLIENT_POOL_ID** can be found from the SST console or the outputs of the dev command (UserPoolClientId).
+- Use the **username** and **password** from setting up your user
+
 ## Commands
 
 ### `pnpm dev`

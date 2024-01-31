@@ -94,7 +94,6 @@ export const CreateLotterySFStack = ({ stack }: StackContext) => {
 
     api.addRoutes(stack, {
         'POST /admin/lottery': {
-            // authorizer: "iam",
             function: {
                 handler:
                     'packages/functions/src/admin/stepFunctionTriggers/createLotteryTrigger.handler',
