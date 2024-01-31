@@ -6,7 +6,7 @@ export const AuthStack = ({ stack, app }: StackContext) => {
     const { api } = use(ApiStack);
 
     // Create a Cognito User Pool and Identity Pool
-    const auth = new Cognito(stack, 'LotteryUsers-bar', {
+    const auth = new Cognito(stack, 'LotteryUsers', {
         login: ['email'],
         cdk: {
             userPool: {

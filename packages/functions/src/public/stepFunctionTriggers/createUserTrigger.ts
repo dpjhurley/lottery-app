@@ -1,6 +1,6 @@
 import { validationMiddleware } from '@lottery-app/core/middleware';
 import { APIGatewayProxyEventV2 } from 'aws-lambda';
-import * as stepFunction from 'src/utils/stepFunction';
+import * as stepFunction from '../../utils/stepFunction';
 import { cognito } from '@lottery-app/core/service';
 import middy from '@middy/core';
 

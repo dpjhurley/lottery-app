@@ -3,9 +3,9 @@ import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import { jwtDecode } from 'jwt-decode';
 
 interface LotteryUserToken {
-    "email": string;
-    "family_name": string;
-    "given_name": string;
+    email: string;
+    family_name: string;
+    given_name: string;
     'custom:isAdmin': string;
 }
 
@@ -17,23 +17,39 @@ export const isAdminMiddleware = (): middy.MiddlewareObj<
         APIGatewayProxyEventV2,
         APIGatewayProxyResultV2
     > = async (request) => {
-        // need to do something to check if admin
-        console.log({ HERE: request });
-        console.log({ token: request.event.headers });
-
         const { authorization } = request.event.headers;
         if (!authorization) {
-            throw new Error('Unauthorized');
+            return {
+                statusCode: 401,
+                body: JSON.stringify({
+                    message: 'Unauthorized',
+                }),
+            };
         }
 
         const token = authorization.split(' ')[1];
-        const decoded = jwtDecode<LotteryUserToken>(token);
+        try {
+            const decoded = await jwtDecode<LotteryUserToken>(token);
+            console.log('decoded', decoded);
 
-        const adminAttribute = decoded['custom:isAdmin'];
+            const adminAttribute = decoded['custom:isAdmin'];
 
-        // Check if the user is an admin
-        if (adminAttribute !== 'true') {
-            throw new Error('Unauthorized');
+            // Check if the user is an admin
+            if (adminAttribute !== 'true') {
+                return {
+                    statusCode: 401,
+                    body: JSON.stringify({
+                        message: 'Unauthorized',
+                    }),
+                };
+            }
+        } catch (error) {
+            return {
+                statusCode: 401,
+                body: JSON.stringify({
+                    message: 'Unauthorized',
+                }),
+            };
         }
     };
 

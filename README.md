@@ -1,5 +1,5 @@
 # lottery-app
-This is an sst application that can be spun up in aws, this has a few endpoints which help create a basic lottery game. for more info on the api's available please check out the [postman collection](https://api.postman.com/collections/11585001-5808ee38-b82d-47ba-8445-8c79f7b35805?access_key=PMAT-01HNFCTS5EZD9NC1J8DTXGVWHJ). 
+This is an sst application that can be spun up in aws, this has a few endpoints which help create a basic lottery game. For more info on the api's available please check out the postman collection, sent via email. 
 
 ## Set up
 
@@ -36,7 +36,15 @@ Below is a rough architecture diagram of what the application should look like. 
 
 ## Authentication for admin
 
-For this you will have to create a user, and confirm through the apis created. Then run this command to get an id token which is used to decode the admin status of a user. 
+For this you will have to create a user, and confirm through the apis created. Then run this command to get an id token which is used to decode the admin status of a user. You will also need to set the custom attribute of isAdmin to true, either through the console or the command below.
+
+```bash
+aws cognito-idp admin-update-user-attributes \
+    --region us-east-1 \
+    --user-pool-id USER_POOL_ID \
+    --username YOUR_EMAIL \
+    --user-attributes Name="custom:isAdmin",Value="true"
+```
 
 I've added a jq pipe to this to make it easier, If you don't have it installed you can use brew
 

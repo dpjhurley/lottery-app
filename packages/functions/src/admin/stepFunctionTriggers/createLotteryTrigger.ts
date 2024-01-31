@@ -41,5 +41,5 @@ const createLotteryTriggerHandler = async (event: APIGatewayProxyEventV2) => {
 };
 
 export const handler = middy(createLotteryTriggerHandler)
-    .use(validationMiddleware.validateNonEmptyUnparsedBodyMiddleware())
-    .use(adminMiddleware.isAdminMiddleware());
+    .use(adminMiddleware.isAdminMiddleware())
+    .use(validationMiddleware.validateNonEmptyUnparsedBodyMiddleware());

@@ -30,7 +30,7 @@ export const CreateUserSFStack = ({ stack }: StackContext) => {
         'POST /auth/signup': {
             function: {
                 handler:
-                    'packages/functions/src/admin/stepFunctionTriggers/createUserTrigger.handler',
+                    'packages/functions/src/public/stepFunctionTriggers/createUserTrigger.handler',
                 environment: {
                     STATE_MACHINE: stateMachine.stateMachineArn,
                     USER_POOL_ID: auth.userPoolId,
