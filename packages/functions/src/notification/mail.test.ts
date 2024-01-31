@@ -4,9 +4,12 @@ import { APIGatewayProxyEventV2 } from 'aws-lambda';
 
 const mockSendWinnerEmail = jest.fn();
 const mockSendAdminWinnerEmail = jest.fn();
-jest.mock('./ses', () => ({
-    sendWinnerEmail: mockSendWinnerEmail,
-    sendAdminWinnerEmail: mockSendAdminWinnerEmail,
+
+jest.mock('../../../core/src/service/ses', () => ({
+    sendWinnerEmail: jest.fn().mockImplementation(() => mockSendWinnerEmail()),
+    sendAdminWinnerEmail: jest
+        .fn()
+        .mockImplementation(() => mockSendAdminWinnerEmail()),
 }));
 
 describe('sendWinnerEmail', () => {
@@ -33,13 +36,13 @@ describe('sendWinnerEmail', () => {
 
     it('should handle errors when sending an email to the winner', async () => {
         // Arrange
-        mockSendWinnerEmail.mockImplementationOnce(
-            () => new Error('Failed to send email')
-        );
+        mockSendWinnerEmail.mockImplementationOnce(() => {
+            throw new Error('Failed to send email');
+        });
 
         // Act
         // Assert
-        expect(await sendWinnerEmail(mockEvent)).rejects.toThrow();
+        await expect(sendWinnerEmail(mockEvent)).rejects.toThrow('Failed to send email');
     });
 });
 
@@ -68,12 +71,11 @@ describe('sendAdminWinnerEmail', () => {
 
     it('should handle errors when sending an email to the admin', async () => {
         // Arrange
-        mockSendAdminWinnerEmail.mockImplementationOnce(
-            () => new Error('Failed to send email')
-        );
-
-        // Act
-        // Assert
-        expect(await sendAdminWinnerEmail(mockEvent)).rejects.toThrow();
+        mockSendAdminWinnerEmail.mockImplementationOnce(() => {
+            throw new Error('Failed to send email');
+        });
+    
+        // Act and Assert
+        await expect(sendAdminWinnerEmail(mockEvent)).rejects.toThrow('Failed to send email');
     });
 });

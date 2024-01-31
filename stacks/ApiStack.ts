@@ -18,15 +18,15 @@ export const ApiStack = ({ stack }: StackContext) => {
             },
             // Admin routes
             'GET /admin/users': {
-                authorizer: 'iam',
+                // authorizer: 'iam',
                 function: 'packages/functions/src/admin/user.getUsers',
             },
             'GET /admin/user/{id}': {
-                authorizer: 'iam',
+                // authorizer: 'iam',
                 function: 'packages/functions/src/admin/user.getUser',
             },
             'DELETE /admin/user/{id}': {
-                authorizer: 'iam',
+                // authorizer: 'iam',
                 function: 'packages/functions/src/admin/user.deleteUser',
             },
         },

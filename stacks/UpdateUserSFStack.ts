@@ -9,10 +9,9 @@ export const UpdateUserSFStack = ({ stack }: StackContext) => {
     const { auth } = use(AuthStack);
     const { api } = use(ApiStack);
 
-    // TODO: Confusing names of lambdas
     const createUserTask = new LambdaInvoke(stack, 'UpdateUserTask', {
         lambdaFunction: new Function(stack, 'UpdateUser-func', {
-            handler: 'packages/functions/src/user/user.UpdateUser',
+            handler: 'packages/functions/src/admin/user.UpdateUser',
             environment: {
                 USER_POOL_CLIENT_ID: auth.userPoolClientId,
             },
@@ -22,7 +21,6 @@ export const UpdateUserSFStack = ({ stack }: StackContext) => {
 
     const sSuccess = new sfn.Succeed(stack, 'Success');
 
-    // Define state machine
     const stateDefinition = sfn.Chain.start(createUserTask).next(sSuccess);
 
     const stateMachine = new sfn.StateMachine(stack, 'UpdateUserStateMachine', {
@@ -33,7 +31,7 @@ export const UpdateUserSFStack = ({ stack }: StackContext) => {
         'PATCH /admin/users/:id': {
             // authorizer: 'iam',
             function: {
-                handler: 'packages/functions/src/admin/user.handler',
+                handler: 'packages/functions/src/stepFunctionTriggers/updateUserTrigger.handler',
                 environment: {
                     STATE_MACHINE: stateMachine.stateMachineArn,
                     USER_POOL_ID: auth.userPoolId,

@@ -36,6 +36,10 @@ export const createUser = async (event: CreateUserInput) => {
                 Name: 'family_name',
                 Value: familyName,
             },
+            {
+                Name: 'custom:isAdmin',
+                Value: "false"
+            },
         ],
     });
 

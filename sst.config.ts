@@ -5,6 +5,7 @@ import { AuthStack } from './stacks/AuthStack';
 import { CreateUserSFStack } from './stacks/CreateUserSFStack';
 import { EventStack } from './stacks/EventStack';
 import { CreateLotterySFStack } from './stacks/CreateLotterySFStack';
+// import { UpdateUserSFStack } from './stacks/UpdateUserSFStack';
 
 export default {
     config(_input) {
@@ -20,5 +21,6 @@ export default {
             .stack(AuthStack)
             .stack(CreateUserSFStack)
             .stack(CreateLotterySFStack);
+            // .stack(UpdateUserSFStack);
     },
 } satisfies SSTConfig;
